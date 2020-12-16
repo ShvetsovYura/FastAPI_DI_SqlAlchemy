@@ -1,8 +1,8 @@
-from sqlalchemy import create_engine, orm
-from sqlalchemy.orm import Session
-from sqlalchemy.ext.declarative import declarative_base
-import contextlib
+from contextlib import contextmanager
 
+from sqlalchemy import create_engine, orm
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import Session
 
 Base = declarative_base()
 
@@ -16,18 +16,13 @@ class Database:
             orm.sessionmaker(autocommit=False,
                              autoflush=False, bind=self.engine))
 
-    @contextlib.contextmanager
+    @contextmanager
     def session(self):
         session: Session = self.session_factory()
         try:
             yield session
         except Exception as e:
-            print('Session rollback because of exception: %s', e,
-                  exc_info=True)
+            print('Session rollback because of exception: %s', e)
             session.rollback()
         finally:
             session.close()
-
-    @staticmethod
-    def session_factory(db):
-        return db.session

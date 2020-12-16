@@ -1,9 +1,7 @@
 from fastapi import FastAPI
-from .containers import Container
+
 from . import endpoints
-
-
-app = FastAPI()
+from .containers import Container
 
 
 def create_app():
@@ -11,11 +9,11 @@ def create_app():
     container.config.from_yaml("config.yml")
     container.wire(modules=[endpoints])
 
-    app = FastAPI()
-    app.container = container
-    app.include_router(endpoints.router)
+    fastapi_app = FastAPI()
+    fastapi_app.container = container
+    fastapi_app.include_router(endpoints.router)
 
-    return app
+    return fastapi_app
 
 
 app = create_app()
